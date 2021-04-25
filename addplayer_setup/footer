@@ -62,7 +62,6 @@ class SimpleOpenWorkload extends WorkloadModuleBase {
             this.txIndex++;
             const index = Math.floor(Math.random() * (parameters.length / 3));
 
-            const index = 
             workload.push({
                 contract: 'marketplace',
                 verb: 'addPlayer',
