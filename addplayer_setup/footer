@@ -60,13 +60,14 @@ class SimpleOpenWorkload extends WorkloadModuleBase {
         let workload = [];
         for(let i= 0; i < this.roundArguments.txnPerBatch; i++) {
             this.txIndex++;
+            const index = Math.floor(Math.random() * (parameters.length / 3));
 
+            const index = 
             workload.push({
                 contract: 'marketplace',
                 verb: 'addPlayer',
-                from: parameters[3 * this.txIndex],
-                /*args: ["0x4248a403e869f049411658dc0dafe7dd50348e0921d2e5c1bd28054e95ba4749", "0x3206a85a5329a0409bf470387fd36a4d1df98ba82413f64505500df72611369b643df024fbc091324137dd69ca847cf3a7b49c0757b80e2066ccf27df40c8a9000"],*/
-                args: [parameters[3 * this.txIndex + 1], parameters[3 * this.txIndex + 2]],
+                from: parameters[3 * index],
+                args: [parameters[3 * index + 1], parameters[3 * index + 2]],
                 readOnly: false
             });
         }
