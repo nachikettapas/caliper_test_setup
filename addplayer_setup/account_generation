@@ -1,0 +1,21 @@
+rm -rf *.sh *.txt *.js
+python3 account.py
+if [ -z "$dockerid" ]
+then
+    cd $HOME/caliper-benchmarks/networks/ethereum/1node-clique
+    docker-compose up -d
+fi
+dockerid=`docker ps -aqf "name=ethereum_clique"`
+echo $dockerid
+cd $HOME/caliper_test_setup/addplayer_setup
+sudo docker cp ./account_creation.sh $dockerid:/root/.ethereum
+sudo docker cp ./fund_transfer.sh $dockerid:/root/.ethereum
+sudo docker cp ./unlock_account.sh $dockerid:/root/.ethereum
+docker exec -t $dockerid sh -c 'cd /root/.ethereum && chmod +x *.sh'
+docker exec -t $dockerid sh -c 'cd /root/.ethereum && ./account_creation.sh'
+docker exec -t $dockerid sh -c 'cd /root/.ethereum && ./fund_transfer.sh'
+docker exec -t $dockerid sh -c 'cd /root/.ethereum && ./unlock_account.sh'
+cat header > addPlayer.js
+cat parameters.txt >> addPlayer.js
+cat footer >> addPlayer.js
+cp addPlayer.js $HOME/caliper-benchmarks/benchmarks/scenario/marketplace

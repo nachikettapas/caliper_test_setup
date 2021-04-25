@@ -1,0 +1,117 @@
+
+/**
+ * Workload module for initializing the SUT with various accounts.
+ */
+class SimpleOpenWorkload extends WorkloadModuleBase {
+
+    /**
+     * Initializes the parameters of the workload.
+     */
+    constructor() {
+        super();
+        this.accountPrefix = '';
+        this.txIndex = -1;
+    }
+
+    /**
+     * Generate string by picking characters from the dictionary variable.
+     * @param {number} number Character to select.
+     * @returns {string} string Generated string based on the input number.
+     * @private
+     */
+    static _get26Num(number){
+        let result = '';
+
+        while(number > 0) {
+            result += Dictionary.charAt(number % Dictionary.length);
+            number = parseInt(number / Dictionary.length);
+        }
+
+        return result;
+    }
+
+    /**
+     * Generate unique account key for the transaction.
+     * @returns {string} The account key.
+     * @private
+     */
+    _generateAccount() {
+        return this.roundArguments.accountPhasePrefix + this.accountPrefix + SimpleOpenWorkload._get26Num(this.txIndex + 1);
+    }
+
+    /**
+     * Get the argument for creating random file hash (SHA-256)
+     *
+     */
+    _getRandomFileHash(length) {
+        var randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var result = '';
+        for ( var i = 0; i < length; i++ ) {
+            result += randomChars.charAt(Math.floor(Math.random() * randomChars.length));
+        }
+        return result;
+    }
+
+    /**
+     * Generates simple workload.
+     * @returns {{verb: String, args: Object[]}[]} Array of workload argument objects.
+     */
+    _generateWorkload() {
+        let workload = [];
+        for(let i= 0; i < this.roundArguments.txnPerBatch; i++) {
+            this.txIndex++;
+
+            workload.push({
+                contract: 'marketplace',
+                verb: 'addPlayer',
+                from: parameters[3 * this.txIndex],
+                /*args: ["0x4248a403e869f049411658dc0dafe7dd50348e0921d2e5c1bd28054e95ba4749", "0x3206a85a5329a0409bf470387fd36a4d1df98ba82413f64505500df72611369b643df024fbc091324137dd69ca847cf3a7b49c0757b80e2066ccf27df40c8a9000"],*/
+                args: [parameters[3 * this.txIndex + 1], parameters[3 * this.txIndex + 2]],
+                readOnly: false
+            });
+        }
+        return workload;
+    }
+
+    /**
+     * Initialize the workload module with the given parameters.
+     * @param {number} workerIndex The 0-based index of the worker instantiating the workload module.
+     * @param {number} totalWorkers The total number of workers participating in the round.
+     * @param {number} roundIndex The 0-based index of the currently executing round.
+     * @param {Object} roundArguments The user-provided arguments for the round from the benchmark configuration file.
+     * @param {ConnectorBase} sutAdapter The adapter of the underlying SUT.
+     * @param {Object} sutContext The custom context object provided by the SUT adapter.
+     * @async
+     */
+    async initializeWorkloadModule(workerIndex, totalWorkers, roundIndex, roundArguments, sutAdapter, sutContext) {
+        await super.initializeWorkloadModule(workerIndex, totalWorkers, roundIndex, roundArguments, sutAdapter, sutContext);
+
+        if(!this.roundArguments.accountPhasePrefix) {
+            throw new Error('marketplace.announce - the "accountPhasePrefix" argument is missing');
+        }
+
+        if(!this.roundArguments.txnPerBatch) {
+            this.roundArguments.txnPerBatch = 1;
+        }
+
+        this.accountPrefix = SimpleOpenWorkload._get26Num(workerIndex);
+    }
+
+    /**
+     * Assemble TXs for opening new accounts.
+     */
+    async submitTransaction() {
+        let args = this._generateWorkload();
+        await this.sutAdapter.sendRequests(args);
+    }
+}
+
+/**
+ * Create a new instance of the workload module.
+ * @return {WorkloadModuleInterface}
+ */
+function createWorkloadModule() {
+    return new SimpleOpenWorkload();
+}
+
+module.exports.createWorkloadModule = createWorkloadModule;
