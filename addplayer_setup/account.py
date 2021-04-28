@@ -1,3 +1,6 @@
+#!/usr/bin/python
+
+import sys
 import secrets
 import sha3
 import eth_keys
@@ -5,7 +8,7 @@ from eth_keys import keys
 from eth_account import Account, messages # This requires web3.py installed
 
 with open("account_creation.sh", "a") as f1, open("fund_transfer.sh", "a") as f2, open("unlock_account.sh", "a") as f3, open("parameters.txt", "a") as f4, open("all_parameters.txt", "a") as f5:
-    for i in range(100):
+    for i in range(int(sys.argv[1])):
         # Code for creation of account using private key 
 
         private_key = str(hex(secrets.randbits(256))[2:])
@@ -36,12 +39,12 @@ with open("account_creation.sh", "a") as f1, open("fund_transfer.sh", "a") as f2
         f3.write('geth attach --exec \'web3.personal.unlockAccount("' + public_address + '", "", 0);\'\n')
 
         # Code for parameters
-        if i == 99:
-            f4.write('"' + public_address + '", "0x' + keccak256_hash + '", "' + signed_message.signature.hex() + '"];') 
+        if i == int(sys.argv[1]) - 1:
+            f4.write('["' + public_address + '", "0x' + keccak256_hash + '", "' + signed_message.signature.hex() + '"]];\n') 
         elif i == 0:
-            f4.write('const parameters = ["' + public_address + '", "0x' + keccak256_hash + '", "' + signed_message.signature.hex() + '", ') 
+            f4.write('const parameters = [["' + public_address + '", "0x' + keccak256_hash + '", "' + signed_message.signature.hex() + '"], \n') 
         else:
-            f4.write('"' + public_address + '", "0x' + keccak256_hash + '", "' + signed_message.signature.hex() + '", ') 
+            f4.write('["' + public_address + '", "0x' + keccak256_hash + '", "' + signed_message.signature.hex() + '"], \n') 
 
         # Code for saving all paramters
         f5.write('"' + public_address + '", "' + private_key + '", "' + keccak256_hash + '", "' + signed_message.signature.hex() + '"\n')

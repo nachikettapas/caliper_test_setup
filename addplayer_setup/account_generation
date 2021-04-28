@@ -1,5 +1,5 @@
 rm -rf *.sh *.txt *.js
-python3 account.py
+python3 account.py $1
 if [ -z "$dockerid" ]
 then
     cd $HOME/caliper-benchmarks/networks/ethereum/1node-clique
