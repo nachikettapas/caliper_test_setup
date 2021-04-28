@@ -15,8 +15,6 @@
 'use strict';
 
 const { WorkloadModuleBase } = require('@hyperledger/caliper-core');
-
 const Dictionary = 'abcdefghijklmnopqrstuvwxyz';
-
 const Web3 = require('web3');
 const ethers = require("ethers");

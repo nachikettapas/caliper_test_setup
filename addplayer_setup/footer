@@ -1,3 +1,5 @@
+var uniqueRandoms = [];
+var numRandoms = parameters.length;
 
 /**
  * Workload module for initializing the SUT with various accounts.
@@ -11,6 +13,9 @@ class SimpleOpenWorkload extends WorkloadModuleBase {
         super();
         this.accountPrefix = '';
         this.txIndex = -1;
+        for (var i = 0; i < numRandoms; i++) {
+            uniqueRandoms.push(i);
+        }
     }
 
     /**
@@ -52,6 +57,16 @@ class SimpleOpenWorkload extends WorkloadModuleBase {
         return result;
     }
 
+    _makeUniqueRandom() {
+        var index = Math.floor(Math.random() * uniqueRandoms.length);
+        var val = uniqueRandoms[index];
+
+        // now remove that value from the array
+        uniqueRandoms.splice(index, 1);
+
+        return val;
+    }
+
     /**
      * Generates simple workload.
      * @returns {{verb: String, args: Object[]}[]} Array of workload argument objects.
@@ -60,13 +75,13 @@ class SimpleOpenWorkload extends WorkloadModuleBase {
         let workload = [];
         for(let i= 0; i < this.roundArguments.txnPerBatch; i++) {
             this.txIndex++;
-            const index = Math.floor(Math.random() * parameters.length);
+            const indx = this._makeUniqueRandom();
 
             workload.push({
                 contract: 'marketplace',
                 verb: 'addPlayer',
-                from: parameters[index][0],
-                args: [parameters[index][1], parameters[index][2]],
+                from: parameters[indx][0],
+                args: [parameters[indx][1], parameters[indx][2]],
                 readOnly: false
             });
         }
