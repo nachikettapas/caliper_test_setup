@@ -53,6 +53,17 @@ class SimpleOpenWorkload extends WorkloadModuleBase {
     }
 
     /**
+     * Returns a random timestamp.
+     * @return {string} Account key.
+     * @private
+     */
+    _getRandomTime() {
+        let timestamp = 0;
+        timestamp = Math.round(Date.now() / 1000);
+        return timestamp;
+    }
+
+    /**
      * Generates simple workload.
      * @returns {{verb: String, args: Object[]}[]} Array of workload argument objects.
      */
@@ -63,9 +74,10 @@ class SimpleOpenWorkload extends WorkloadModuleBase {
 
             workload.push({
                 contract: 'marketplace',
-                verb: 'addPlayer',
+                verb: 'register',
                 from: parameters[this.txIndex][0],
-                args: [parameters[this.txIndex][1], parameters[this.txIndex][2]],
+                value: Web3.utils.toWei(this.roundArguments.playerCommitment.toString(), "ether"),
+                args: [parameters[this.txIndex][1], parameters[this.txIndex][2], this.txIndex, this.roundArguments.playerCommitment],
                 readOnly: false
             });
         }
@@ -100,8 +112,8 @@ class SimpleOpenWorkload extends WorkloadModuleBase {
      * Assemble TXs for opening new accounts.
      */
     async submitTransaction() {
-        let args = this._generateWorkload();
-        await this.sutAdapter.sendRequests(args);
+        let register_args = this._generateWorkload();
+        await this.sutAdapter.sendRequests(register_args);
     }
 }
 

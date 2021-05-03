@@ -53,6 +53,17 @@ class SimpleOpenWorkload extends WorkloadModuleBase {
     }
 
     /**
+     * Returns a random timestamp.
+     * @return {string} Account key.
+     * @private
+     */
+    _getRandomTime() {
+        let timestamp = 0;
+        timestamp = Math.round(Date.now() / 1000);
+        return timestamp;
+    }
+
+    /**
      * Generates simple workload.
      * @returns {{verb: String, args: Object[]}[]} Array of workload argument objects.
      */
@@ -63,9 +74,9 @@ class SimpleOpenWorkload extends WorkloadModuleBase {
 
             workload.push({
                 contract: 'marketplace',
-                verb: 'addPlayer',
-                from: parameters[this.txIndex][0],
-                args: [parameters[this.txIndex][1], parameters[this.txIndex][2]],
+                verb: 'setReceived',
+                from: this.roundArguments.manager, 
+                args: [this.txIndex, parameters[this.txIndex][0]],
                 readOnly: false
             });
         }

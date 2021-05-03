@@ -1,0 +1,7 @@
+rm -rf *.sh *.txt *.js
+cd $HOME/caliper_test_setup/commit_setup
+cp $HOME/caliper_test_setup/addplayer_setup/parameters.txt .
+cat header > commit.js
+cat parameters.txt >> commit.js
+cat footer >> commit.js
+cp commit.js $HOME/caliper-benchmarks/benchmarks/scenario/marketplace

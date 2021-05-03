@@ -1,0 +1,7 @@
+rm -rf *.sh *.txt *.js
+cd $HOME/caliper_test_setup/reveal_setup
+cp $HOME/caliper_test_setup/addplayer_setup/parameters.txt .
+cat header > reveal.js
+cat parameters.txt >> reveal.js
+cat footer >> reveal.js
+cp reveal.js $HOME/caliper-benchmarks/benchmarks/scenario/marketplace

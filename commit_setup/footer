@@ -53,6 +53,17 @@ class SimpleOpenWorkload extends WorkloadModuleBase {
     }
 
     /**
+     * Returns a random timestamp.
+     * @return {string} Account key.
+     * @private
+     */
+    _getRandomTime() {
+        let timestamp = 0;
+        timestamp = Math.round(Date.now() / 1000);
+        return timestamp;
+    }
+
+    /**
      * Generates simple workload.
      * @returns {{verb: String, args: Object[]}[]} Array of workload argument objects.
      */
@@ -60,12 +71,15 @@ class SimpleOpenWorkload extends WorkloadModuleBase {
         let workload = [];
         for(let i= 0; i < this.roundArguments.txnPerBatch; i++) {
             this.txIndex++;
+            var vote = 1;
+            var encodedInput = "0x" + String(vote).padStart(64, 0) + Web3.utils.asciiToHex(String(this.txIndex)).padEnd(66, 0).substring(2,66);
+            var commitment = Web3.utils.soliditySha3(encodedInput);
 
             workload.push({
                 contract: 'marketplace',
-                verb: 'addPlayer',
-                from: parameters[this.txIndex][0],
-                args: [parameters[this.txIndex][1], parameters[this.txIndex][2]],
+                verb: 'commit',
+                from: parameters[this.txIndex][0], 
+                args: [this.txIndex, commitment, this._getRandomTime()],
                 readOnly: false
             });
         }

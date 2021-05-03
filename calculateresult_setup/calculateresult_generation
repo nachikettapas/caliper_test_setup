@@ -1,0 +1,7 @@
+rm -rf *.sh *.txt *.js
+cd $HOME/caliper_test_setup/calculateresult_setup
+cp $HOME/caliper_test_setup/addplayer_setup/parameters.txt .
+cat header > calculateresult.js
+cat parameters.txt >> calculateresult.js
+cat footer >> calculateresult.js
+cp calculateresult.js $HOME/caliper-benchmarks/benchmarks/scenario/marketplace

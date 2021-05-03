@@ -1,0 +1,7 @@
+rm -rf *.sh *.txt *.js
+cd $HOME/caliper_test_setup/setreceived_setup
+cp $HOME/caliper_test_setup/addplayer_setup/parameters.txt .
+cat header > setReceived.js
+cat parameters.txt >> setReceived.js
+cat footer >> setReceived.js
+cp setReceived.js $HOME/caliper-benchmarks/benchmarks/scenario/marketplace
